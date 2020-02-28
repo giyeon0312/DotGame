@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerMove : MonoBehaviour
+public class PlayerController : MonoBehaviour
 {
+    public GameManager gameManager;
     [SerializeField] private float maxSpeed;
     [SerializeField] private float jumpPower;
     Rigidbody2D rigid;
@@ -58,7 +59,7 @@ public class PlayerMove : MonoBehaviour
 
     private void DirectionFlip()
     {
-        if (Input.GetButtonDown("Horizontal"))
+        if (Input.GetButton("Horizontal"))
             spriteRenderer.flipX = (Input.GetAxisRaw("Horizontal") == -1);//bool값 return하도록
     }
 
@@ -74,6 +75,7 @@ public class PlayerMove : MonoBehaviour
 
     private void Jump()
     {
+        //if (Input.GetButtonDown("Jump") && !anim.GetBool("IsJumping"))//중복점프방지
         if (Input.GetButtonDown("Jump"))
         {
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
@@ -94,10 +96,85 @@ public class PlayerMove : MonoBehaviour
 
             if (rayHit.collider != null)
             {
-                if (rayHit.distance < 0.5f)
+                if (rayHit.distance < 0.9f)
                     anim.SetBool("IsJumping", false);
-                Debug.Log(rayHit.collider.name);
+                //Debug.Log(rayHit.collider.name);
             }
         }   
     }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            //아래로 낙하&에너미보다 위에 있으면 공격
+            if(rigid.velocity.y<0 && transform.position.y > collision.transform.position.y)
+            {
+                OnAttack(collision.transform);
+            }
+            else
+                OnDamaged(collision.transform.position);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.gameObject.tag == "Item")
+        {
+            //Get Points
+            bool isBronze = collision.gameObject.name.Contains("Bronze");
+            bool isSilver = collision.gameObject.name.Contains("Silver");
+            bool isGold = collision.gameObject.name.Contains("Gold");
+
+            if (isBronze)
+                gameManager.stagePoint += 30;
+            else if (isSilver)
+                gameManager.stagePoint += 70;
+            else if(isGold)
+                gameManager.stagePoint += 100;
+
+            //Deactive Item
+            collision.gameObject.SetActive(false);
+        }
+        else if(collision.gameObject.tag == "Finish")
+        {
+            gameManager.NextStage();
+        }
+    }
+    private void OnAttack(Transform enemy)
+    {
+        //Get Point
+        gameManager.stagePoint += 150;
+
+        //Reaction Force
+        rigid.AddForce(Vector2.up * 3, ForceMode2D.Impulse);
+        //Enemy Die
+        EnemyController enemyController = enemy.GetComponent<EnemyController>();
+        enemyController.OnDamaged();
+    }
+
+    private void OnDamaged(Vector2 pos)
+    {
+        //Lose HP
+        gameManager.healthPoint--;
+
+        //Chage Layer
+        gameObject.layer = 12;//PlayerDamaged레이어로 바꾼다!
+        spriteRenderer.color = new Color(1, 1, 1, 0.4f);//알파값만 바꾼다
+
+        //Reaction Force
+        int dirc = transform.position.x - pos.x > 0 ? 1 : -1;
+        rigid.AddForce(new Vector2(dirc,1)*10, ForceMode2D.Impulse);//물리면 튕기도록
+
+        Invoke("Healed", 2);
+    }
+
+    private void Healed()
+    {
+        gameObject.layer = 9;//Player레이어로 바꾼다!
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+
+   
+   
 }
