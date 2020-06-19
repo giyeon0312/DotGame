@@ -10,14 +10,12 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
     Animator anim;
-    CapsuleCollider2D playerCollider;
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-        playerCollider = GetComponent<CapsuleCollider2D>();
     }
 
     void Update()//1초에 60프레임,단발적인 키 입력
@@ -158,7 +156,7 @@ public class PlayerController : MonoBehaviour
     private void OnDamaged(Vector2 pos)
     {
         //Lose HP
-        gameManager.HealthDown();
+        gameManager.healthPoint--;
 
         //Chage Layer
         gameObject.layer = 12;//PlayerDamaged레이어로 바꾼다!
@@ -177,18 +175,6 @@ public class PlayerController : MonoBehaviour
         spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 
-    public void OnDie()
-    {
-        //Sprite Alpha
-        spriteRenderer.color = new Color(1, 1, 1, 0.4f);
-        //Sprite Flip Y
-        spriteRenderer.flipY = true;
-        //Collider Disable
-        playerCollider.enabled = false;
-        //Die Effect Jump
-        rigid.AddForce(Vector2.up * 5, ForceMode2D.Impulse);
-        //Destroy
-        Invoke("Deactivate", 5);
-    }
-
+   
+   
 }

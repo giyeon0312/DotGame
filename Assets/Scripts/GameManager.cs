@@ -88,7 +88,7 @@ public class GameManager : MonoBehaviour
 
             //Retry Button UI
             Btn_restart.SetActive(true);
-        }
+       }
     }
 
     public void Restart()
@@ -96,4 +96,12 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
+    
+    public void Reposition(){
+    //Plaer Reposition
+        collision.attachedRigidbody.velocity = Vector2.zero;//낙하 속도를 0으로
+        collision.transform.position = new Vector3(0, 0, -1);
+        
+    }
+
 }
