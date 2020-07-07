@@ -20,6 +20,11 @@ public class GameManager : MonoBehaviour
     public Text UIPoint;
     public GameObject Btn_restart;
 
+    public void Start()
+    {
+        SoundManager.instance.PlayBGM("BGM1");
+    }
+
     public void Update()
     {
         UIPoint.text = (totalPoint+stagePoint).ToString(); 
@@ -27,13 +32,17 @@ public class GameManager : MonoBehaviour
 
     public void NextStage()
     {
+        //StageClear Sound
+        SoundManager.instance.PlaySE("AudioStageClear");
+
         //Change Stage
         if (stageIndex < Stages.Length - 1)
         {
             Stages[stageIndex].SetActive(false);
             stageIndex++;
             Stages[stageIndex].SetActive(true);
-            //PlayerReposition();
+            PlayerReposition();
+            SoundManager.instance.PlayBGM("BGM"+(stageIndex + 1).ToString());
 
         }//Game Clear
         else
@@ -50,7 +59,6 @@ public class GameManager : MonoBehaviour
 
     }
 
-
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.tag == "Player")
@@ -63,9 +71,16 @@ public class GameManager : MonoBehaviour
             {
                 collision.attachedRigidbody.velocity = Vector2.zero;//낙하 속도를 0으로
                 collision.transform.position = new Vector3(0, 0, -1);
+                //PlayerReposition();
             }
   
         }
+    }
+
+    public void PlayerReposition()
+    {
+        player.transform.position = new Vector3(0, 0, -1);
+        //player.VelocityZero();
     }
 
     public void HealthDown()
@@ -88,7 +103,7 @@ public class GameManager : MonoBehaviour
 
             //Retry Button UI
             Btn_restart.SetActive(true);
-       }
+        }
     }
 
     public void Restart()
@@ -96,12 +111,4 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
-    
-    public void Reposition(){
-    //Plaer Reposition
-        collision.attachedRigidbody.velocity = Vector2.zero;//낙하 속도를 0으로
-        collision.transform.position = new Vector3(0, 0, -1);
-        
-    }
-
 }
