@@ -15,10 +15,14 @@ public class GameManager : MonoBehaviour
     public int healthPoint;
     public PlayerController player;
 
+    float watchElapsed = 0;
+
     //UI
     public Image[] UIhealth;
     public Text UIPoint;
+    public Text UIWatch;
     public GameObject Btn_restart;
+    public GameObject Btn_save;
 
     public void Start()
     {
@@ -27,7 +31,10 @@ public class GameManager : MonoBehaviour
 
     public void Update()
     {
-        UIPoint.text = (totalPoint+stagePoint).ToString(); 
+        UIPoint.text = (totalPoint+stagePoint).ToString();     
+        watchElapsed += UnityEngine.Time.deltaTime;
+        UIWatch.text = watchElapsed.ToString("0.00");
+        
     }
 
     public void NextStage()
@@ -44,6 +51,9 @@ public class GameManager : MonoBehaviour
             PlayerReposition();
             SoundManager.instance.PlayBGM("BGM"+(stageIndex + 1).ToString());
 
+            //ResetStopwatch
+            ResetWacth();
+
         }//Game Clear
         else
         {
@@ -52,6 +62,7 @@ public class GameManager : MonoBehaviour
             //Result UI
             Debug.Log("게임클리어");
             Btn_restart.SetActive(true);
+            Btn_save.SetActive(true);
         }
 
         totalPoint += stagePoint;
@@ -106,9 +117,20 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void ResetWacth()
+    {
+        watchElapsed= 0;
+    }
+
     public void Restart()
     {
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
+    }
+
+    public void Save()
+    {
+        //후에 구현할 것
+        Debug.Log("남은 healthPoint,totalPoint,time으로 점수 랭킹 구현하기");
     }
 }
