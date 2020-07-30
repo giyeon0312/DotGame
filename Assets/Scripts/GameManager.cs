@@ -48,6 +48,10 @@ public class GameManager : MonoBehaviour
             Stages[stageIndex].SetActive(false);
             stageIndex++;
             Stages[stageIndex].SetActive(true);
+            if (stageIndex == 2)
+            {
+                player.OnStage3();
+            }
             PlayerReposition();
             SoundManager.instance.PlayBGM("BGM"+(stageIndex + 1).ToString());
 

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EnemyController : MonoBehaviour
+public class EnemyController3 : MonoBehaviour
 {
     [SerializeField] private int nextMove;
     private Rigidbody2D rigid;
@@ -26,8 +26,8 @@ public class EnemyController : MonoBehaviour
 
         //Platform Check
         Vector2 frontVec = new Vector2(rigid.position.x + nextMove, rigid.position.y);//오브젝트의 앞 위치벡터
-        Debug.DrawRay(frontVec, Vector3.down, new Color(0, 1, 0));
-        RaycastHit2D rayHitPlatform = Physics2D.Raycast(frontVec, Vector3.down, 1, LayerMask.GetMask("Platform"));//충돌한 오브젝트의 콜라이더 정보 저장                                                                                   //GetMask():레이어 이름에 해당하는 정수값 리턴여기선 8
+        Debug.DrawRay(frontVec, Vector3.down,new Color(0, 1, 0));
+        RaycastHit2D rayHitPlatform = Physics2D.Raycast(frontVec, Vector3.down, 3, LayerMask.GetMask("Platform"));//충돌한 오브젝트의 콜라이더 정보 저장                                                                                   //GetMask():레이어 이름에 해당하는 정수값 리턴여기선 8
 
         
         if (rayHitPlatform.collider == null)//오브젝트의 앞에 platform이 없으면z
@@ -36,8 +36,19 @@ public class EnemyController : MonoBehaviour
         }
 
         //TryAttack
-        Debug.DrawRay(frontVec, Vector3.left, new Color(1, 0, 0));
-        RaycastHit2D rayHitPlayer = Physics2D.Raycast(frontVec, Vector3.left, 1, LayerMask.GetMask("Player"));
+        RaycastHit2D rayHitPlayer;
+        //오른쪽 보고 있을 때
+        if (nextMove == 1)
+        {
+            //Debug.DrawRay(frontVec, new Vector3(1, -0.5f, 0), new Color(1, 0, 0));
+            rayHitPlayer = Physics2D.Raycast(frontVec, new Vector3(1, -0.5f, 0), 2, LayerMask.GetMask("Player"));
+        }      
+        else
+        {//왼쪽 혹은 가만히 있을 때
+            //Debug.DrawRay(frontVec, new Vector3(-1, -0.5f, 0), new Color(1, 0, 0));
+            rayHitPlayer = Physics2D.Raycast(frontVec, new Vector3(-1, -0.5f, 0), 2, LayerMask.GetMask("Player"));
+        }
+
         if (rayHitPlayer.collider != null)
         {
             //사실 여기 TryAttack()을 두고 Attack()은 oncollision에 두어야할거 같다

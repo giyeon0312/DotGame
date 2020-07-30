@@ -9,8 +9,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpPower;
     Rigidbody2D rigid;
     SpriteRenderer spriteRenderer;
+    Sprite spriteStage3;
     Animator anim;
     CapsuleCollider2D playerCollider;
+    bool isStage3 = false;
 
     void Awake()
     {
@@ -69,10 +71,14 @@ public class PlayerController : MonoBehaviour
     {
         //animation전환
         //횡이동속도(벡터값이므로 절댓값으로)가 0이면 false
-        if (Mathf.Abs(rigid.velocity.x) < 0.3f)
-            anim.SetBool("IsWalking", false);
-        else
-            anim.SetBool("IsWalking", true);
+        if (!isStage3)
+        {
+            if (Mathf.Abs(rigid.velocity.x) < 0.3f)
+                anim.SetBool("IsWalking", false);
+            else
+                anim.SetBool("IsWalking", true);
+        }
+    
     }
 
     private void Jump()
@@ -81,7 +87,8 @@ public class PlayerController : MonoBehaviour
         if (Input.GetButtonDown("Jump"))
         {
             rigid.AddForce(Vector2.up * jumpPower, ForceMode2D.Impulse);
-            anim.SetBool("IsJumping", true);
+            if(!isStage3)
+                anim.SetBool("IsJumping", true);
             //이후IsGround에서 애니메이션 멈춤
         }
           
@@ -157,8 +164,17 @@ public class PlayerController : MonoBehaviour
         //Reaction Force
         rigid.AddForce(Vector2.up * 3, ForceMode2D.Impulse);
         //Enemy Die
-        EnemyController enemyController = enemy.GetComponent<EnemyController>();
-        enemyController.OnDamaged();
+        if (isStage3)
+        {
+            EnemyController3 enemyController = enemy.GetComponent<EnemyController3>();
+            enemyController.OnDamaged();
+        }
+        else
+        {
+            EnemyController enemyController = enemy.GetComponent<EnemyController>();
+            enemyController.OnDamaged();
+        }
+            
     }
 
     private void OnDamaged(Vector2 pos)
@@ -169,9 +185,15 @@ public class PlayerController : MonoBehaviour
         //Lose HP
         gameManager.HealthDown();
 
-        //Chage Layer
+        //Change Layer
         gameObject.layer = 12;//PlayerDamaged레이어로 바꾼다!
         spriteRenderer.color = new Color(1, 1, 1, 0.4f);//알파값만 바꾼다
+
+        //Change animation on Stage3
+        if (isStage3)
+        {
+            anim.SetTrigger("IsAttacked");
+        }
 
         //Reaction Force
         int dirc = transform.position.x - pos.x > 0 ? 1 : -1;
@@ -200,4 +222,13 @@ public class PlayerController : MonoBehaviour
         Invoke("Deactivate", 5);
     }
    
+    public void OnStage3()
+    {
+        Debug.Log("stage3이당");
+        spriteRenderer.sprite = spriteStage3;
+        isStage3 = true;
+        anim.SetBool("IsWalking", false);
+        anim.SetBool("IsJumping", false);
+        anim.SetBool("IsStage3", true);
+    }
 }
