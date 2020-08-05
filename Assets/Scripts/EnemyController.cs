@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour
     CapsuleCollider2D enemyCollider;
     Animator anim;
     SpriteRenderer spriteRenderer;
+    public int health;
 
     void Awake()
     {

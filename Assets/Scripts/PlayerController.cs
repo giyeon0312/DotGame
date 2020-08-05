@@ -123,6 +123,10 @@ public class PlayerController : MonoBehaviour
             }
             else
                 OnDamaged(collision.transform.position);
+
+        }else if(collision.gameObject.tag == "Flame")
+        {
+            OnDamaged(collision.transform.position);
         }
     }
 
@@ -163,16 +167,32 @@ public class PlayerController : MonoBehaviour
 
         //Reaction Force
         rigid.AddForce(Vector2.up * 3, ForceMode2D.Impulse);
-        //Enemy Die
+        
+        //Enemy Damage
         if (isStage3)
         {
             EnemyController3 enemyController = enemy.GetComponent<EnemyController3>();
-            enemyController.OnDamaged();
+            if (enemyController.health <= 1)
+            {
+                enemyController.OnDamaged();
+            }
+            else
+            {
+                enemyController.health -= 1;
+            }
+           
         }
         else
         {
             EnemyController enemyController = enemy.GetComponent<EnemyController>();
-            enemyController.OnDamaged();
+            if (enemyController.health <= 1)
+            {
+                enemyController.OnDamaged();
+            }
+            else
+            {
+                enemyController.health -= 1;
+            }
         }
             
     }
@@ -219,12 +239,11 @@ public class PlayerController : MonoBehaviour
         //Die Effect Jump
         rigid.AddForce(Vector2.up * 5, ForceMode2D.Impulse);
         //Destroy
-        Invoke("Deactivate", 5);
+        Invoke("Deactivate", 1);
     }
    
     public void OnStage3()
     {
-        Debug.Log("stage3이당");
         spriteRenderer.sprite = spriteStage3;
         isStage3 = true;
         anim.SetBool("IsWalking", false);

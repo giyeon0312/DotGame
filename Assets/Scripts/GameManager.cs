@@ -33,7 +33,7 @@ public class GameManager : MonoBehaviour
     {
         UIPoint.text = (totalPoint+stagePoint).ToString();     
         watchElapsed += UnityEngine.Time.deltaTime;
-        UIWatch.text = watchElapsed.ToString("0.00");
+        UIWatch.text = ShowWatch();
         
     }
 
@@ -56,7 +56,7 @@ public class GameManager : MonoBehaviour
             SoundManager.instance.PlayBGM("BGM"+(stageIndex + 1).ToString());
 
             //ResetStopwatch
-            ResetWacth();
+            //ResetWacth();
 
         }//Game Clear
         else
@@ -88,7 +88,10 @@ public class GameManager : MonoBehaviour
                 collision.transform.position = new Vector3(0, 0, -1);
                 //PlayerReposition();
             }
-  
+
+        }else if (collision.gameObject.tag=="Flame")
+        {
+            Destroy(collision.gameObject);
         }
     }
 
@@ -119,6 +122,15 @@ public class GameManager : MonoBehaviour
             //Retry Button UI
             Btn_restart.SetActive(true);
         }
+    }
+
+    private string ShowWatch()
+    {
+        int minute = (int)(watchElapsed / 60f);
+        float seconds = watchElapsed % 60f;
+        string timenow = minute+":"+seconds.ToString("00.00");
+        timenow = timenow.Replace(".", ":");
+        return timenow;
     }
 
     public void ResetWacth()

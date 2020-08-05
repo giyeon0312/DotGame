@@ -9,6 +9,9 @@ public class EnemyController3 : MonoBehaviour
     CapsuleCollider2D enemyCollider;
     Animator anim;
     SpriteRenderer spriteRenderer;
+    public int health;
+
+    public GameObject flame;
 
     void Awake()
     {
@@ -17,6 +20,9 @@ public class EnemyController3 : MonoBehaviour
         Invoke("RandomMove", 5);
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        //Fire
+        Fire();
     } 
 
     void FixedUpdate()
@@ -54,9 +60,9 @@ public class EnemyController3 : MonoBehaviour
             //사실 여기 TryAttack()을 두고 Attack()은 oncollision에 두어야할거 같다
             Attack();
         }
-        
-        
+
     }
+
     
     //재귀함수
     void RandomMove()
@@ -101,5 +107,18 @@ public class EnemyController3 : MonoBehaviour
     private void Deactivate()
     {
         gameObject.SetActive(false);
+    }
+
+    void Fire()
+    {
+       // Quaternion dir = Quaternion.EulerRotation();
+        GameObject fire =
+            Instantiate(flame,new Vector3(transform.position.x,transform.position.y+2.5f,transform.position.z),transform.rotation);
+       // Rigidbody2D rigid = fire.GetComponent<Rigidbody2D>();
+       // rigid.AddForce(Vector2.left);
+      //  rigid.AddForce(new Vector3(1, 0));
+        //rigid.AddRelativeForce(Vector2.left);
+       // rigid.velocity = transform.forward;
+        Invoke("Fire", 2);
     }
 }
